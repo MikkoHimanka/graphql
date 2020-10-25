@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
   
 import React from 'react'
+import SetBirthyear from './SetBirthyear'
 
 const Authors = (props) => {
   if (!props.show) {
@@ -35,6 +36,7 @@ const Authors = (props) => {
           )}
         </tbody>
       </table>
+      <SetBirthyear authors={authors} />
     </div>
   )
 }
