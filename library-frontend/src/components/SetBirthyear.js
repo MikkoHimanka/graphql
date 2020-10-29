@@ -27,7 +27,7 @@ const SetBirthyear = (props) => {
                     name
                     <select value={name} onChange={handleChange}>
                         {props.authors.map(a =>
-                            <option value={a.name}>{a.name}</option>
+                            <option value={a.name} key={a.name}>{a.name}</option>
                             )}
                     </select>
                     {/* <input type='text' value={name} onChange={({target}) => setName(target.value)} /> */}
