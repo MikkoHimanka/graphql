@@ -1,4 +1,4 @@
-const { ApolloServer, gql } = require('apollo-server')
+const { ApolloServer, gql, UserInputError } = require('apollo-server')
 const mongoose = require('mongoose')
 const config = require('./utils/config')
 const Author = require('./models/author')
@@ -70,26 +70,34 @@ const resolvers = {
   },
   Mutation: {
     addBook: async (root, args) => {
-      const author = await Author.findOne({ name: args.author })
-      
-      if (!author) {
-        const newAuthor = new Author({name: args.author})
-        const id = await newAuthor.save()
-        const book = new Book({ ...args, author: id._id }).save()
-        const newBook = await Book.findOne({id: book._id}).populate('author')
-        return newBook
-      } else {
-        const book = new Book({ ...args, author: author._id }).save()
-        const newBook = await Book.findOne({id: book._id}).populate('author')
-        return newBook
+      try {
+        const author = await Author.findOne({ name: args.author })
+        if (!author) {
+          const newAuthor = new Author({name: args.author})
+          const id = await newAuthor.save()
+          try {
+            const book = await new Book({ ...args, author: id._id }).save()
+            const newBook = await Book.findOne({id: book._id}).populate('author')
+            return newBook
+          } catch (e) {
+            throw new UserInputError('Book name too short')
+          }
+        } else {
+          try {
+            const book = await new Book({ ...args, author: author._id }).save()
+            const newBook = await Book.findOne({id: book._id}).populate('author')
+            return newBook
+          } catch (e) {
+            throw new UserInputError('Book name too short')
+          }
+      }} catch (e) {
+        if (e.message.includes('Author')) throw new UserInputError('Author name too short')
       }
     },
     editAuthor: async (root, args) => {
-        const author = await Author.findOne({ name: args.name })
-        
-        author.born = args.setBornTo
-
-        return author.save()
+      const author = await Author.findOne({ name: args.name })
+      author.born = args.setBornTo
+      return await author.save()
     }
   }
 }

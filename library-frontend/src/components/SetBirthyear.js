@@ -10,9 +10,11 @@ const SetBirthyear = (props) => {
 
     const submit = async (event) => {
         event.preventDefault()
-        changeBirthYear({ variables: { name, born } })
-        setName('')
-        setBorn('')
+        if (born) {
+            changeBirthYear({ variables: { name, born } })
+            setName('')
+            setBorn('')
+        }
     }
 
     const handleChange = (event) => {
