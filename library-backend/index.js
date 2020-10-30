@@ -100,23 +100,16 @@ const resolvers = {
         if (!author) {
           const newAuthor = new Author({name: args.author})
           const id = await newAuthor.save()
-          try {
-            const book = await new Book({ ...args, author: id._id }).save()
-            const newBook = await Book.findOne({id: book._id}).populate('author')
-            return newBook
-          } catch (e) {
-            throw new UserInputError('Book name too short')
-          }
+          const book = await new Book({ ...args, author: id._id }).save()
+          const newBook = await Book.findOne({id: book._id}).populate('author')
+          return newBook
         } else {
-          try {
-            const book = await new Book({ ...args, author: author._id }).save()
-            const newBook = await Book.findOne({id: book._id}).populate('author')
-            return newBook
-          } catch (e) {
-            throw new UserInputError('Book name too short')
-          }
+          const book = await new Book({ ...args, author: author._id }).save()
+          const newBook = await Book.findOne({id: book._id}).populate('author')
+          return newBook
       }} catch (e) {
-        if (e.message.includes('Author')) throw new UserInputError('Author name too short')
+        if (e.message.startsWith('Book')) throw new UserInputError('Book name too short')
+        if (e.message.startsWith('Author')) throw new UserInputError('Author name too short')
       }
     },
     editAuthor: async (root, args, context) => {
