@@ -8,7 +8,13 @@ const Books = (props) => {
   if (props.books.loading) {
     return <div>loading...</div>
   }
+
+  const unique = (value, index, self) => {
+    return self.indexOf(value) === index
+  }
+
   const books = props.books.data.allBooks
+  const genres = books.map(x => x.genres).flat(1).filter(unique)
 
   return (
     <div>
@@ -34,6 +40,9 @@ const Books = (props) => {
           )}
         </tbody>
       </table>
+      {genres.map(g => 
+        <button>{g}</button>
+      )}
     </div>
   )
 }
